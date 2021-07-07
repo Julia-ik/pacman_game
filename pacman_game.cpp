@@ -2,14 +2,17 @@
 #include <QKeyEvent>
 #include "appsettings.h"
 #include <QGLWidget>
+//#include "drawer.h"
 
 
 
 pacman_game::pacman_game()
 {
+   AppSettings::instance().setQGLWidget(*this);
+
     mvMenu.push_back({eMenu::PLAY, "Play"});
-    mvMenu.push_back({eMenu::BEST_SCORE, "Best Score"});
-    mvMenu.push_back({eMenu::SELECT_LEVEL, "Select lvl"});
+    mvMenu.push_back({eMenu::BEST_SCORE, "Select lvl" });
+    mvMenu.push_back({eMenu::SELECT_LEVEL, "Best Score"});
     mvMenu.push_back({eMenu::START, "Start"});
     mvMenu.push_back({eMenu::EXIT, "Exit"});
 }
@@ -90,6 +93,8 @@ void pacman_game::initializeGL()
     glEnable(GL_SMOOTH);
     glEnable(GL_TEXTURE_2D);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+    AppSettings::instance().load();
 }
 void pacman_game::resizeGL(int w, int h)
 {
@@ -104,7 +109,8 @@ void pacman_game::resizeGL(int w, int h)
 void pacman_game::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    qglClearColor(Qt::darkYellow);
+    qglClearColor(QColor(123,104,238));
+
     proccesing();
 
     draw();
@@ -158,9 +164,9 @@ void pacman_game::draw_menu()
         static auto app_w = AppSettings::instance().screenWidth();
         static auto app_h = AppSettings::instance().screenHeight();
 
-        static auto font = QFont("Fantasy",25);
+        static auto font = QFont("Sans",25);
         static auto font_selected = QFont("Fantasy",30);
-        font_selected.setBold(true);
+        //font_selected.setBold(true);
 
         auto x = app_w -500;
         auto y= app_h-300;
@@ -171,12 +177,12 @@ void pacman_game::draw_menu()
         {
             if (i==menuStateToInt(mCurrentMenu))
             {
-                qglColor(Qt::green);
+                qglColor(QColor(25,25,112));
                 renderText(x, y, mvMenu[i].second.c_str(), font_selected);
             }
             else
             {
-                qglColor(Qt::black);
+                qglColor(Qt::white);
                 renderText(x, y, mvMenu[i].second.c_str(), font);
             }
 
@@ -188,6 +194,19 @@ void pacman_game::draw_menu()
 
 void pacman_game::draw_menu_new_game()
 {
+    static auto app_w = AppSettings::instance().screenWidth();
+    static auto app_h = AppSettings::instance().screenHeight();
+
+    /*if(mLvl.cPlaySquare.size() >= 1186)
+    {
+        qglColor(Qt::white);
+        renderText(app_w -500, app_h-300, "mLvl.cPlaySquare.size()", QFont("Sans",25));
+    }*/
+
+
+
+
+    mDraw.draw(mLvl, *this);
 
 }
 void pacman_game::draw_menu_continue_game()
@@ -196,10 +215,57 @@ void pacman_game::draw_menu_continue_game()
 }
 void pacman_game::draw_menu_select_level()
 {
+    auto &app = AppSettings::instance();
+    static auto app_w=app.screenWidth();
+    static auto app_h=app.screenHeight();
+
+    auto &levels = app.availableLevels();
+    int lvl_count = (int)levels.size();
+
+    static auto font = QFont("Helvetica", 15);
+    static auto font_selected = QFont("Helvetica", 20);
+    //font_selected.setBold(true);
+
+    int tmp =(mSelectLevelIndex -2);
+    int start = tmp<0 ? 0: tmp;
+
+    tmp = (start +2);
+    int end =(tmp<lvl_count)? tmp:lvl_count -1;
+
+    auto x = app_w -500;
+    auto y= app_h-300;
+    auto dy=55.f;
+
+    for(int i=start; i<=end;i++)
+    {
+
+        const auto &[lvl, isLock]= levels[i];
+         QString item_str = "Level " + QString::number(lvl);
+         QFont &rf = (i==mSelectLevelIndex) ? font_selected: font;
+         Qt::GlobalColor color=Qt::cyan;
+              if (isLock==true)
+                  {
+                    color = Qt::white;
+                  }
+        else
+        {
+            if(isLock ==false)
+                color= Qt::yellow;
+        }
+
+        qglColor (color);
+        renderText(x,y, item_str,rf);
+
+        y+=dy;
+
+    }
+
 
 }
 void pacman_game::draw_best_score()
 {
+
+
 
 }
 
@@ -235,15 +301,20 @@ void pacman_game::key_released_new_game(int aKey)
   {
       case Qt::Key_Up:
         {
+            mLvl.pacman_up();
              break;
         }
         case Qt::Key_Down:
         {
+            mLvl.pacman_down();
              break;
         }
-        case Qt::Key_Enter:
-        case Qt::Key_Return:
+        case Qt::Key_Left:
+          mLvl.pacman_left();
+        break;
+        case Qt::Key_Right:
          {
+          mLvl.pacman_right();
             break;
          }
         case Qt::Key_Escape:
@@ -257,19 +328,50 @@ void pacman_game::key_released_new_game(int aKey)
 
 void pacman_game::key_released_menu_select_lvl(int aKey)
 {
+
+    const auto &levels = AppSettings::instance().availableLevels();
+    int levels_count = (int) levels.size();
+
     switch(aKey)
   {
       case Qt::Key_Up:
         {
+           --mSelectLevelIndex;
+           if(mSelectLevelIndex<0)
+           {
+               mSelectLevelIndex =0;
+           }
              break;
         }
         case Qt::Key_Down:
         {
+            ++mSelectLevelIndex;
+            if(mSelectLevelIndex>=levels_count)
+            {
+                mSelectLevelIndex= levels_count -1;
+            }
              break;
         }
         case Qt::Key_Enter:
         case Qt::Key_Return:
          {
+            if(mSelectLevelIndex>=0)
+            {
+                if(mSelectLevelIndex>= levels_count)
+                {
+                    break;
+                }
+
+                const auto &[lvl, islock]=levels[mSelectLevelIndex];
+
+                if(islock)
+                {
+                    mLvl.load(lvl);
+
+                    mState = eState::NEW_GAME;
+                }
+            }
+
             break;
          }
         case Qt::Key_Escape:
@@ -332,6 +434,7 @@ void pacman_game::proccesing()
  {
   case eState::MENU:
    {
+
      draw_menu();
      break;
    }
@@ -342,6 +445,7 @@ void pacman_game::proccesing()
    }
   case eState::CONTINUE_GAME:
   {
+
     draw_menu_continue_game();
     break;
   }

@@ -8,9 +8,12 @@ TEMPLATE = app
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG +=c++1z
+
 SOURCES += \
     appsettings.cpp \
     drawer.cpp \
+    ghost.cpp \
     lvl.cpp \
     main.cpp \
     pacman_game.cpp
@@ -18,6 +21,7 @@ SOURCES += \
 HEADERS += \
     appsettings.h \
     drawer.h \
+    ghost.h \
     lvl.h \
     pacman_game.h
 

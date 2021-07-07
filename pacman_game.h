@@ -2,10 +2,12 @@
 #define PACMAN_GAME_H
 #include <vector>
 #include <QGLWidget>
+#include "drawer.h"
 
 class pacman_game : public QGLWidget
 {
 public:
+
     enum class eState//(текущее состояние)
     {
         MENU,
@@ -52,7 +54,10 @@ public:
 
 
 private:
-    int mSelectLevelIndex;
+    int mSelectLevelIndex={0};
+
+    lvl mLvl;
+    drawer mDraw;
 
     eState mState{eState::MENU};
     eMenu mCurrentMenu{eMenu::PLAY};
