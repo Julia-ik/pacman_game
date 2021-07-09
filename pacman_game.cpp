@@ -194,20 +194,8 @@ void pacman_game::draw_menu()
 
 void pacman_game::draw_menu_new_game()
 {
-    static auto app_w = AppSettings::instance().screenWidth();
-    static auto app_h = AppSettings::instance().screenHeight();
-
-    /*if(mLvl.cPlaySquare.size() >= 1186)
-    {
-        qglColor(Qt::white);
-        renderText(app_w -500, app_h-300, "mLvl.cPlaySquare.size()", QFont("Sans",25));
-    }*/
-
-
-
-
     mDraw.draw(mLvl, *this);
-
+    mLvl.releaseGhosts();
 }
 void pacman_game::draw_menu_continue_game()
 {

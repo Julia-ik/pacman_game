@@ -7,10 +7,11 @@
 class lvl
 {
     friend class drawer;
+    friend class ghost;
 public:
     enum class  eField
     {
-        EMPTY,
+        EMPTY=0,
         WALL,
         PACMAN,
         GHOST,
@@ -52,6 +53,11 @@ public:
 public:
     std::pair<int,int> cPlayerPosition;
     std::vector<eField> cPlaySquare;
+
+    std::vector<ghost> ghosts;
+
+   void move_ghost();
+   void releaseGhosts();
 
 
 };

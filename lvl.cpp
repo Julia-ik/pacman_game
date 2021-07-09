@@ -1,6 +1,8 @@
 #include "lvl.h"
 #include "appsettings.h"
 #include "ghost.h"
+#include <QGLWidget>
+#include <thread>
 
 #include <QFile>
 #include <QTextStream>
@@ -59,6 +61,7 @@ void lvl::load(int aLevel)
     if(file.isOpen())
     {
       cPlaySquare.clear();
+      ghosts.clear();
 
       QTextStream in(&file);
 
@@ -79,6 +82,11 @@ void lvl::load(int aLevel)
             {
                 cPlayerPosition.first = i;
                 cPlayerPosition.second = lines;
+            }
+
+            if(parseToField(line[i])==lvl::eField::GHOST)
+            {
+                 ghosts.push_back(*new ghost(i, lines));
             }
             cmPlaySquare.push_back(parseToField(line[i]));
         }
@@ -191,7 +199,19 @@ void lvl::pacman_right()
      if(lvl::earnedPoints>=lvl::max)
      {
          lvl::cIsComplete=true;
+
      }
 
-
  }
+
+
+ void lvl::releaseGhosts()
+ {
+     for(int i=0;i<ghosts.size();i++)
+    {
+       ghosts[i].move_ghost(*this);
+
+    }
+}
+
+

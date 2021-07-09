@@ -2,6 +2,7 @@
 #include "lvl.h"
 #include "appsettings.h"
 #include "pacman_game.h"
+#include <vector>
 
 drawer::drawer()
 {
@@ -19,6 +20,16 @@ void drawer::draw(const lvl &aLevel, QGLWidget &aGLWidget)
     draw_grid(aLevel, aGLWidget);
     draw_objects(aLevel, aGLWidget);
     draw_stastics(aLevel, aGLWidget);
+
+}
+
+void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, float x, float y, float fw,
+                       std::pair<int, int> cGhost)
+{
+    auto idGhost   = app.textureID(AppSettings::TexturesId::GHOST);
+    auto &[xGhost, yGhost]=cGhost;
+
+    aGLWidget.drawTexture(QRectF{x+ xGhost*fw, y+ yGhost*fw, fw, fw}, idGhost);
 
 }
 
@@ -80,7 +91,6 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
     auto idCoin      = app.textureID(AppSettings::TexturesId::COIN);
     auto idCookie      = app.textureID(AppSettings::TexturesId::COOKIE);
     auto idWall     = app.textureID(AppSettings::TexturesId::WALL);
-    auto idGhost      = app.textureID(AppSettings::TexturesId::GHOST);
     auto idEmpty = app.textureID(AppSettings::TexturesId::EMPTY);
 
     const auto &map = aLevel.cPlaySquare;
@@ -106,12 +116,6 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
                         textureID=idCoin;
                         break;
                      }
-                 case lvl::eField::GHOST:
-                      {
-                          textureID=idGhost;
-                          break;
-                      }
-
                  case lvl::eField::WALL:
                         {
                             textureID=idWall;
@@ -135,6 +139,13 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
         }
 
     draw_pacman(aLevel, aGLWidget, app, x, y, fw);
+
+    for(int i=0;i<aLevel.ghosts.size();i++)
+    {
+        std::pair<int, int> cGhosts = aLevel.ghosts[i].ghostPos;
+        draw_ghost(aLevel, aGLWidget, app, x,  y, fw, cGhosts);
+    }
+
     glDisable(GL_TEXTURE_2D);
 }
 void drawer::draw_stastics(const lvl &aLevel, QGLWidget &aGLWidget)
@@ -154,5 +165,15 @@ void drawer::draw_stastics(const lvl &aLevel, QGLWidget &aGLWidget)
     strr +="/";
     strr +=QString::number(aLevel.max);
     aGLWidget.renderText(15,40,strr,font);
+
+    if(aLevel.cIsComplete==true)
+    {
+        QString strrr;
+        strrr ="YOU WON";
+        aGLWidget.renderText(40, 70, strrr, font);
+//        sleep (500);
+//        close();
+
+    }
 
 }
