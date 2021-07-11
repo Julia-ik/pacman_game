@@ -52,8 +52,11 @@ void lvl::load(int aLevel)
 
     QFile   file(lvl_path);
 
-    cIsLoad        = false;
-    cIsComplete   = false;
+    cIsLoad = false;
+    cIsComplete = false;
+    areGhostsReleased = false;
+    earnedPoints = 0;
+
 
 
     file.open(QIODevice::ReadOnly);
@@ -139,7 +142,9 @@ void lvl::pacman_right()
 
  void lvl::move(int aDX, int aDY)
  {
-     auto &[xPacman, yPacman]=cPlayerPosition;
+     //auto &[xPacman, yPacman]=cPlayerPosition;
+     auto &xPacman=cPlayerPosition.first;
+     auto &yPacman =cPlayerPosition.second;
      auto nextX = xPacman +aDX;
      auto nextY = yPacman + aDY;
 
@@ -157,10 +162,11 @@ void lvl::pacman_right()
          {
              break;
          }
-//         case eField::GHOST:
-//         {
-//             break;
-//         }
+        case eField::GHOST:
+        {
+            cLives -1;
+            break;
+       }
 
          case eField::COIN:
          {
@@ -199,6 +205,7 @@ void lvl::pacman_right()
      if(lvl::earnedPoints>=lvl::max)
      {
          lvl::cIsComplete=true;
+
 
      }
 

@@ -20,6 +20,10 @@ public:
     };
   public:
     lvl();
+    bool cIsComplete{false};
+    bool areGhostsReleased{false};
+    bool cIsLoad{false};
+    bool cIsOver{false};
     void load(int);//ноемр уровня
     void load(std::string);//старт с прошлого места
     bool isComplete();//завершен ли уровень
@@ -44,12 +48,11 @@ public:
     int columns{0};
     int lines{0};
 
-    int max{500};
+    int max{2};
     void move(int, int);
+    void youWon_Lose();
 
-    bool cIsComplete{false};
-    bool cIsLoad{false};
-    bool cIsOver{false};
+
 public:
     std::pair<int,int> cPlayerPosition;
     std::vector<eField> cPlaySquare;

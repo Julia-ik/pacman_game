@@ -17,9 +17,29 @@ void drawer::draw(const lvl &aLevel, QGLWidget &aGLWidget)
     {
         return;
     }
-    draw_grid(aLevel, aGLWidget);
-    draw_objects(aLevel, aGLWidget);
-    draw_stastics(aLevel, aGLWidget);
+    if(aLevel.cIsComplete)
+    {
+        static auto font=QFont("Comic Sans", 48);
+        aGLWidget.qglColor(Qt::green);
+        QString str;
+
+        str ="YOU WON";
+        aGLWidget.renderText(250,250, str, font);
+
+
+        aGLWidget.qglColor(Qt::black);
+        font=QFont("Comic Sans", 15);
+
+        str ="Press any key...";
+        aGLWidget.renderText(280,299, str, font);
+    }
+    else
+    {
+        draw_grid(aLevel, aGLWidget);
+        draw_objects(aLevel, aGLWidget);
+        draw_stastics(aLevel, aGLWidget);
+    }
+
 
 }
 
@@ -27,7 +47,9 @@ void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &ap
                        std::pair<int, int> cGhost)
 {
     auto idGhost   = app.textureID(AppSettings::TexturesId::GHOST);
-    auto &[xGhost, yGhost]=cGhost;
+    //auto &[xGhost, yGhost]=cGhost;
+    int &xGhost = cGhost.first;
+    int &yGhost = cGhost.second;
 
     aGLWidget.drawTexture(QRectF{x+ xGhost*fw, y+ yGhost*fw, fw, fw}, idGhost);
 
@@ -36,8 +58,9 @@ void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &ap
 void drawer::draw_pacman(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, float x, float y, float fw)
 {
      auto idPacman   = app.textureID(AppSettings::TexturesId::PACMAN);
-     auto &[xPacman, yPacman]=aLevel.cPlayerPosition;
-
+     //auto &[xPacman, yPacman]=aLevel.cPlayerPosition;
+     auto &xPacman= aLevel.cPlayerPosition.first;
+     auto &yPacman= aLevel.cPlayerPosition.second;
      aGLWidget.drawTexture(QRectF{x+ xPacman*fw, y+ yPacman*fw, fw, fw}, idPacman);
 }
 
@@ -169,10 +192,7 @@ void drawer::draw_stastics(const lvl &aLevel, QGLWidget &aGLWidget)
     if(aLevel.cIsComplete==true)
     {
         QString strrr;
-        strrr ="YOU WON";
-        aGLWidget.renderText(40, 70, strrr, font);
-//        sleep (500);
-//        close();
+
 
     }
 
