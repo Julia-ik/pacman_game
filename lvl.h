@@ -3,21 +3,14 @@
 #include <string>
 #include <vector>
 #include "ghost.h"
+#include  "GameEnums.h"
+#include <thread>
+
 
 class lvl
 {
     friend class drawer;
     friend class ghost;
-public:
-    enum class  eField
-    {
-        EMPTY=0,
-        WALL,
-        PACMAN,
-        GHOST,
-        COOKIE,
-        COIN
-    };
   public:
     lvl();
     bool cIsComplete{false};
@@ -48,7 +41,7 @@ public:
     int columns{0};
     int lines{0};
 
-    int max{2};
+    int max{400};
     void move(int, int);
     void youWon_Lose();
 
@@ -58,6 +51,7 @@ public:
     std::vector<eField> cPlaySquare;
 
     std::vector<ghost> ghosts;
+    std::vector<std::thread> thread_vector;
 
    void move_ghost();
    void releaseGhosts();

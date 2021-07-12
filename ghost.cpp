@@ -15,49 +15,48 @@ ghost::ghost(int x, int y)
 }
 
 
-void ghost::move_ghost(const lvl &aLevel)
+void ghost::move_ghost(int columns, std::vector<eField> *cPlaySquare)
 {
+   auto newDirection = chooseDirect(columns, cPlaySquare);
 
-    auto newDirection = chooseDirect(aLevel);
-
-    ghostPos.first = newDirection.first;
-    ghostPos.second = newDirection.second;
-
+   ghostPos.first = newDirection.first;
+   ghostPos.second = newDirection.second;
 
 }
-std::pair<int,int> ghost::chooseDirect(const lvl &aLevel)
+std::pair<int,int> ghost::chooseDirect(int columns, std::vector<eField> *cPlaySquare)
 {
-    auto &[xGhost, yGhost]=ghostPos;
+    auto &xGhost = ghostPos.first;
+    auto &yGhost = ghostPos.second;
     int nextX;
     int nextY;
-    auto nFieldinVector = lvl::eField::WALL;
+    auto nFieldinVector = eField::WALL;
 
-    while(nFieldinVector == lvl::eField::WALL)
+    while(nFieldinVector == eField::WALL)
     {
         srand(time(0));
         auto nextDir= rand() % 4;
 
         switch(nextDir)
         {
-          case (int)Directions::Up:
+          case static_cast<int>(Directions::Up):
           {
             nextX = xGhost;
             nextY = yGhost - 1;
             break;
           }
-          case (int)Directions::Down:
+          case static_cast<int>(Directions::Down):
           {
             nextX = xGhost;
             nextY = yGhost + 1;
             break;
           }
-          case (int)Directions::Left:
+          case static_cast<int>(Directions::Left):
           {
             nextX = xGhost - 1;
             nextY = yGhost;
             break;
           }
-          case (int)Directions::Right:
+          case static_cast<int>(Directions::Right):
           {
             nextX = xGhost +1;
             nextY = yGhost;
@@ -65,8 +64,8 @@ std::pair<int,int> ghost::chooseDirect(const lvl &aLevel)
           }
         }
 
-        auto nPositionVect = aLevel.columns * nextY + nextX; //индекс следующего поля в векторе
-        nFieldinVector = aLevel.cPlaySquare[nPositionVect];
+        auto nPositionVect = columns * nextY + nextX; //индекс следующего поля в векторе
+        nFieldinVector = cPlaySquare->at(nPositionVect);
     }
 
     return std::pair<int,int>(nextX,nextY);

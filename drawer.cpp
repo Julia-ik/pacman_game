@@ -1,13 +1,9 @@
 #include "drawer.h"
 #include "lvl.h"
 #include "appsettings.h"
-#include "pacman_game.h"
 #include <vector>
 
-drawer::drawer()
-{
-
-}
+drawer::drawer() = default;
 
 
 
@@ -19,11 +15,9 @@ void drawer::draw(const lvl &aLevel, QGLWidget &aGLWidget)
     }
     if(aLevel.cIsComplete)
     {
-        static auto font=QFont("Comic Sans", 48);
+        QFont font = QFont("Comic Sans", 48);
         aGLWidget.qglColor(Qt::green);
-        QString str;
-
-        str ="YOU WON";
+        QString str = "YOU WON";
         aGLWidget.renderText(250,250, str, font);
 
 
@@ -43,11 +37,10 @@ void drawer::draw(const lvl &aLevel, QGLWidget &aGLWidget)
 
 }
 
-void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, float x, float y, float fw,
+void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, qreal x, qreal y, qreal fw,
                        std::pair<int, int> cGhost)
 {
-    auto idGhost   = app.textureID(AppSettings::TexturesId::GHOST);
-    //auto &[xGhost, yGhost]=cGhost;
+    const auto idGhost   = app.textureID(AppSettings::TexturesId::GHOST);
     int &xGhost = cGhost.first;
     int &yGhost = cGhost.second;
 
@@ -55,10 +48,9 @@ void drawer::draw_ghost(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &ap
 
 }
 
-void drawer::draw_pacman(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, float x, float y, float fw)
+void drawer::draw_pacman(const lvl &aLevel, QGLWidget &aGLWidget, AppSettings &app, qreal x, qreal y, qreal fw)
 {
-     auto idPacman   = app.textureID(AppSettings::TexturesId::PACMAN);
-     //auto &[xPacman, yPacman]=aLevel.cPlayerPosition;
+     const auto idPacman   = app.textureID(AppSettings::TexturesId::PACMAN);
      auto &xPacman= aLevel.cPlayerPosition.first;
      auto &yPacman= aLevel.cPlayerPosition.second;
      aGLWidget.drawTexture(QRectF{x+ xPacman*fw, y+ yPacman*fw, fw, fw}, idPacman);
@@ -107,9 +99,9 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
     auto &lines = aLevel.lines;
     auto &columns=aLevel.columns;
 
-    float fw = (float) sw/(float) columns;//ширина поля
+    qreal fw = (float) sw/(float) columns;//ширина поля
 
-    float x(25.0f);
+    qreal x(25.0);
 
     auto idCoin      = app.textureID(AppSettings::TexturesId::COIN);
     auto idCookie      = app.textureID(AppSettings::TexturesId::COOKIE);
@@ -117,7 +109,7 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
     auto idEmpty = app.textureID(AppSettings::TexturesId::EMPTY);
 
     const auto &map = aLevel.cPlaySquare;
-    float y{150.f};
+    qreal y{150.0};
 
     glEnable(GL_TEXTURE_2D);
 
@@ -129,22 +121,22 @@ void drawer::draw_objects(const lvl &aLevel, QGLWidget &aGLWidget)
             unsigned int textureID =0;
             switch(map[i*columns + j])
             {
-                case lvl::eField::COOKIE:
+                case eField::COOKIE:
                     {
                         textureID=idCookie;
                          break;
                      }
-                 case lvl::eField::COIN:
+                 case eField::COIN:
                     {
                         textureID=idCoin;
                         break;
                      }
-                 case lvl::eField::WALL:
+                 case eField::WALL:
                         {
                             textureID=idWall;
                             break;
                         }
-                  case lvl::eField::EMPTY:
+                  case eField::EMPTY:
                          {
                             textureID=idEmpty;
                             break;

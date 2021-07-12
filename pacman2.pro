@@ -19,6 +19,7 @@ SOURCES += \
     pacman_game.cpp
 
 HEADERS += \
+    GameEnums.h \
     appsettings.h \
     drawer.h \
     ghost.h \

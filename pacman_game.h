@@ -45,12 +45,14 @@ public:
     void draw_menu_select_level();
     void draw_best_score();
     void draw_menu_continue_game();
+    void draw_menu_play();
 
     void key_released_menu(int);
     void key_released_new_game(int);
     void key_released_menu_select_lvl(int);
     void key_released_best_score(int);
     void key_released_continue_game(int);
+    void key_released_play(int);
 
 
 private:

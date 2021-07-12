@@ -2,9 +2,11 @@
 #define DRAWER_H
 
 #include "lvl.h"
-#include <QGLWidget>
 #include "appsettings.h"
+#include "GameEnums.h"
 #include <vector>
+#include <QGLWidget>
+
 
 class drawer
 {
@@ -16,8 +18,8 @@ private:
     void draw_grid(const lvl&, QGLWidget &);
     void draw_objects(const lvl&, QGLWidget &);
     void draw_stastics(const lvl&, QGLWidget &);
-    void draw_pacman(const lvl&, QGLWidget & , AppSettings &, float, float, float);
-    void draw_ghost(const lvl&, QGLWidget & , AppSettings &, float, float, float, std::pair<int, int>);
+    static void draw_pacman(const lvl&, QGLWidget & , AppSettings &, qreal, qreal, qreal);
+    static void draw_ghost(const lvl&, QGLWidget & , AppSettings &, qreal, qreal, qreal, std::pair<int, int>);
 
     bool TextureIsLoad{false};
 };

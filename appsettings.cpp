@@ -6,17 +6,15 @@
 
 
 
-static const QString level_Path = "./../../another_pacman/pacman2/levels/";//директория из кот будут уровни
-static const QString pics_path = "./../../another_pacman/pacman2/pics/";
+//static const QString level_Path = "./../../another_pacman/pacman2/levels/";//директория из кот будут уровни
+//static const QString pics_path = "./../../another_pacman/pacman2/pics/";
 
-static std::array<unsigned int, (int)AppSettings::TexturesId::END> localTextures;
+static std::array<unsigned int, static_cast<int>(AppSettings::TexturesId::END)> localTextures;
 
-AppSettings::AppSettings()
-{
-
-}
+AppSettings::AppSettings() = default;
 AppSettings::~AppSettings()
 {
+
     save();
 }
 
@@ -33,9 +31,11 @@ void AppSettings::load()
     while(it.hasNext())//пока есть следующий элемент в директории
     {
         it.next();//переходим к следующему
-        QFileInfo info(it.fileInfo());//информация о файле
-        if(info.completeSuffix()=="lvl")
-            mAvailableLevels.push_back({info.baseName().toInt(),true});//файл получает имя в циферках и доступность
+
+        if(QFileInfo(it.fileInfo()).completeSuffix() == "lvl")
+        {
+            mAvailableLevels.emplace_back(QFileInfo(it.fileInfo()).baseName().toInt(),true);//файл получает имя в циферках и доступность
+        }
     }
 
     sort (mAvailableLevels.begin(), mAvailableLevels.end(),
@@ -56,12 +56,12 @@ void AppSettings::save()
      return level_Path;
  }
 
-unsigned AppSettings::screenWidth() const
+unsigned AppSettings::screenWidth()
 {
     static unsigned res{800};
     return  res;
 }
-unsigned AppSettings::screenHeight() const
+unsigned AppSettings::screenHeight()
 {
     static unsigned res{600};
     return res;
@@ -88,17 +88,18 @@ void AppSettings::load_textures()
         return mpGLContext->bindTexture(PngImg);
     };
 
-    localTextures[(int)TexturesId::GHOST] = load_texture(pics_path + "ghost.png");
-    localTextures[(int)TexturesId::PACMAN] = load_texture(pics_path + "pacman.png");
-    localTextures[(int)TexturesId::COIN] = load_texture(pics_path + "coin.png");
-    localTextures[(int)TexturesId::COOKIE] = load_texture(pics_path + "cookie.png");
-    localTextures[(int)TexturesId::WALL] = load_texture(pics_path + "wall.png");
-    localTextures[(int)TexturesId::EMPTY] = load_texture(pics_path + "transparent.png");
+
+    localTextures[static_cast<int>(TexturesId::GHOST)] = load_texture(pics_path + "ghost.png");
+    localTextures[static_cast<int>(TexturesId::PACMAN)] = load_texture(pics_path + "pacman.png");
+    localTextures[static_cast<int>(TexturesId::COIN)] = load_texture(pics_path + "coin.png");
+    localTextures[static_cast<int>(TexturesId::COOKIE)] = load_texture(pics_path + "cookie.png");
+    localTextures[static_cast<int>(TexturesId::WALL)] = load_texture(pics_path + "wall.png");
+    localTextures[static_cast<int>(TexturesId::EMPTY)] = load_texture(pics_path + "transparent.png");
 
     glDisable(GL_TEXTURE_2D);
 }
 
 unsigned int AppSettings::textureID(TexturesId aId)
 {
-    return localTextures[(int)aId];
+    return localTextures[static_cast<int>(aId)];
 }

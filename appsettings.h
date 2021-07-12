@@ -25,16 +25,16 @@ public:
     static AppSettings & instance();
 
     void load();
-    void save();
+    static void save();
 
     void setQGLWidget(QGLWidget &);
 
-    QString  levelsPath() const;
-    unsigned screenWidth() const;
-    unsigned screenHeight() const;
+    [[nodiscard]] QString levelsPath() const;
+    [[nodiscard]]static unsigned screenWidth();
+    [[nodiscard]]static unsigned screenHeight();
 
 
-    unsigned int textureID(TexturesId);
+    static unsigned int textureID(TexturesId);
 
      const std::vector<std::pair<int, bool>> &availableLevels();
 
@@ -48,8 +48,8 @@ private:
     ~AppSettings();
 
  private:
-    unsigned nScreenWidth{0};
-    unsigned nScreenHeight{0};
+    const QString level_Path = "./../../another_pacman/pacman2/levels/";
+    const QString pics_path = "./../../another_pacman/pacman2/pics/";
 
     QGLWidget *mpGLContext{nullptr};
 

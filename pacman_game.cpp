@@ -2,6 +2,10 @@
 #include <QKeyEvent>
 #include "appsettings.h"
 #include <QGLWidget>
+#include <lvl.h>
+#include <cstdlib>
+#include <ctime>
+#include <thread>
 //#include "drawer.h"
 
 
@@ -46,13 +50,13 @@ int pacman_game::menuStateToInt(const pacman_game::eMenu &aMenu)
 {
     switch(aMenu)
     {
-        case pacman_game::eMenu::BEGIN: return (int)pacman_game::eMenu::BEGIN;
-        case pacman_game::eMenu::PLAY: return (int)pacman_game::eMenu::PLAY;
-        case pacman_game::eMenu::BEST_SCORE: return (int)pacman_game::eMenu::BEST_SCORE;
-        case pacman_game::eMenu::SELECT_LEVEL: return (int)pacman_game::eMenu::SELECT_LEVEL;
-        case pacman_game::eMenu::START: return (int)pacman_game::eMenu::START;
-        case pacman_game::eMenu::EXIT: return (int)pacman_game::eMenu::EXIT;
-        case pacman_game::eMenu::END: return (int)pacman_game::eMenu::END;
+        case pacman_game::eMenu::BEGIN: return static_cast<int>(pacman_game::eMenu::BEGIN);
+        case pacman_game::eMenu::PLAY: return static_cast<int>(pacman_game::eMenu::PLAY);
+        case pacman_game::eMenu::BEST_SCORE: return static_cast<int>(pacman_game::eMenu::BEST_SCORE);
+        case pacman_game::eMenu::SELECT_LEVEL: return static_cast<int>(pacman_game::eMenu::SELECT_LEVEL);
+        case pacman_game::eMenu::START: return static_cast<int>(pacman_game::eMenu::START);
+        case pacman_game::eMenu::EXIT: return static_cast<int>(pacman_game::eMenu::EXIT);
+        case pacman_game::eMenu::END: return static_cast<int>(pacman_game::eMenu::END);
     }
     return  -1;
 }
@@ -190,12 +194,23 @@ void pacman_game::draw_menu()
         }
 };
 
+void pacman_game::draw_menu_play()
+{
 
+}
 
 void pacman_game::draw_menu_new_game()
 {
     mDraw.draw(mLvl, *this);
     mLvl.releaseGhosts();
+
+    if(mLvl.cIsComplete)
+    {
+
+        mState= eState::SELECT_LEVEL;
+    }
+
+
 }
 void pacman_game::draw_menu_continue_game()
 {
@@ -208,7 +223,7 @@ void pacman_game::draw_menu_select_level()
     static auto app_h=app.screenHeight();
 
     auto &levels = app.availableLevels();
-    int lvl_count = (int)levels.size();
+    int lvl_count = static_cast<int>(levels.size());
 
     static auto font = QFont("Helvetica", 15);
     static auto font_selected = QFont("Helvetica", 20);
@@ -227,7 +242,9 @@ void pacman_game::draw_menu_select_level()
     for(int i=start; i<=end;i++)
     {
 
-        const auto &[lvl, isLock]= levels[i];
+        //const auto &[lvl, isLock]= levels[i];
+        const auto &lvl = levels[i].first;
+        const auto &isLock =levels[i].second;
          QString item_str = "Level " + QString::number(lvl);
          QFont &rf = (i==mSelectLevelIndex) ? font_selected: font;
          Qt::GlobalColor color=Qt::cyan;
@@ -257,7 +274,10 @@ void pacman_game::draw_best_score()
 
 }
 
+void pacman_game::key_released_play(int aKey)
+{
 
+}
 
 void pacman_game::key_released_menu(int aKey)
 {
@@ -318,7 +338,7 @@ void pacman_game::key_released_menu_select_lvl(int aKey)
 {
 
     const auto &levels = AppSettings::instance().availableLevels();
-    int levels_count = (int) levels.size();
+    int levels_count = static_cast<int>(levels.size());
 
     switch(aKey)
   {
@@ -350,7 +370,9 @@ void pacman_game::key_released_menu_select_lvl(int aKey)
                     break;
                 }
 
-                const auto &[lvl, islock]=levels[mSelectLevelIndex];
+                //const auto &[lvl, islock]=levels[mSelectLevelIndex];
+                const auto &lvl=levels[mSelectLevelIndex].first;
+                const auto &islock = levels[mSelectLevelIndex].second;
 
                 if(islock)
                 {
@@ -454,7 +476,6 @@ void pacman_game::proccesing()
     }
     }
 }
-
 
 
 

@@ -6,42 +6,44 @@
 
 #include <QFile>
 #include <QTextStream>
+#include <QThread>
+
 
 
 lvl::lvl()
 {}
 
-lvl::eField parseToField (QChar ch)
+eField parseToField (QChar ch)
 {
     switch (ch.toLatin1())
     {
         case '#':
         {
-            return lvl::eField::WALL;
+            return eField::WALL;
         }
         case '%':
         {
-            return lvl::eField::PACMAN;
+            return eField::PACMAN;
         }
         case '*':
         {
-            return lvl::eField::GHOST;
+            return eField::GHOST;
         }
         case '.':
         {
-            return lvl::eField::COIN;
+            return eField::COIN;
         }
         case ',':
         {
-            return lvl::eField::COOKIE;
+            return eField::COOKIE;
         }
         case ' ':
         {
-            return lvl::eField::EMPTY;
+            return eField::EMPTY;
         }
         default: break;
     }
-    return lvl::eField::WALL;
+    return eField::WALL;
 }
 
 void lvl::load(int aLevel)
@@ -81,13 +83,13 @@ void lvl::load(int aLevel)
 
         for(int i=0;i<line.size();i++)
         {
-            if(parseToField(line[i]) == lvl::eField::PACMAN)
+            if(parseToField(line[i]) == eField::PACMAN)
             {
                 cPlayerPosition.first = i;
                 cPlayerPosition.second = lines;
             }
 
-            if(parseToField(line[i])==lvl::eField::GHOST)
+            if(parseToField(line[i])== eField::GHOST)
             {
                  ghosts.push_back(*new ghost(i, lines));
             }
@@ -142,7 +144,7 @@ void lvl::pacman_right()
 
  void lvl::move(int aDX, int aDY)
  {
-     //auto &[xPacman, yPacman]=cPlayerPosition;
+
      auto &xPacman=cPlayerPosition.first;
      auto &yPacman =cPlayerPosition.second;
      auto nextX = xPacman +aDX;
@@ -164,7 +166,7 @@ void lvl::pacman_right()
          }
         case eField::GHOST:
         {
-            cLives -1;
+            cLives -=1;
             break;
        }
 
@@ -206,7 +208,6 @@ void lvl::pacman_right()
      {
          lvl::cIsComplete=true;
 
-
      }
 
  }
@@ -214,9 +215,10 @@ void lvl::pacman_right()
 
  void lvl::releaseGhosts()
  {
-     for(int i=0;i<ghosts.size();i++)
+
+    for(int i=0;i<ghosts.size();i++)
     {
-       ghosts[i].move_ghost(*this);
+        ghosts[i].move_ghost(columns, &cPlaySquare);
 
     }
 }
